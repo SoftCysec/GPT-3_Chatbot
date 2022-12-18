@@ -1,11 +1,13 @@
 from django.shortcuts import render
 import os
 import dotenv
+from dotenv import load_dotenv
+load_dotenv()
 import openai
 
 # Set up the OpenAI API client
 dotenv.load_dotenv()
-openai.api_key = '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'
+openai.api_key = os.getenv('API_KEY')
 
 # Set up the model to use
 model_engine = "text-davinci-002"
