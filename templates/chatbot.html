@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OkwareChat</title>
+    <style>
+        /* Add some basic styling for the chat interface */
+        
+        body {
+            font-family: Arial, sans-serif;
+        }
+        
+        h1 {
+            text-align: center;
+        }
+        
+        form {
+            width: 500px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #chatlog {
+            margin: 20px 0;
+            height: 400px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        
+        .message {
+            margin: 10px 0;
+        }
+        
+        .user {
+            text-align: right;
+        }
+        
+        .bot {
+            text-align: left;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        
+        input[type="submit"] {
+            margin-top: 10px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Chatbot</h1>
+    <form method="post" action="{% url 'chatbot' %}">
+        {% csrf_token %}
+        <div id="chatlog">
+            {% for message in chat_messages %}
+            <div class="message">{{ message }}</div>
+            {% endfor %}
+        </div>
+        <div>
+            <label for="user_input">Enter your message:</label><br>
+            <input type="text" id="user_input" name="user_input"><br>
+            <input type="submit" value="Send">
+        </div>
+    </form>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get the form element
+            var form = document.getElementById("chatform");
+
+            // Handle form submission
+            form.addEventListener("submit", function(event) {
+                event.preventDefault();
+
+                // Get the user's input
+                var userInput = document.getElementById("user_input").value;
+
+                // Send the user's input to the server
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", form.action);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        // Get the chatbot's response
+                        var response = xhr.responseText;
+
+                        // Display the response in the chat log
+                        var chatLog = document.getElementById("chatlog");
+                        var message = document.createElement("div");
+                        message.classList.add("message");
+                        message.innerHTML = response;
+                        chatLog.appendChild(message);
+                    }
+                };
+                xhr.send("user_input=" + encodeURIComponent(userInput));
+            });
+        });
+    </script>
+</body>
+
+</html>
